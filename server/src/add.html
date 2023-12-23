@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>USCServer</title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+        />
+        <!-- Bootstrap CSS v5.2.1 -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+            crossorigin="anonymous"
+        />
+    </head>
+
+    <body>
+        <header>
+            <!-- place navbar here -->
+        </header>
+        <main class="d-flex justify-content-center" style="margin-top: 200px">
+            <div class="card" style="width: 1050px; height: 560px; margin-left: 20px">
+                <div class="card-header">
+                  Add package
+                </div>
+                <div class="card-body">
+                  <h3 class="d-flex justify-content-center" style="user-select: none;">Welcome to adding package form</h3>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="image" style="margin-top: 50px;">
+                        <p class="card-text" style=" user-select: none;">To add a package, transfer the zip archive to a special form.</p>
+                        <div class="mb-3" style="margin-top: 15%">
+                            <label for="fileInput" class="form-label">Choose file</label>
+                            <input
+                              type="file"
+                              class="form-control"
+                              id="fileInput"
+                              placeholder=""
+                              accept=".zip"
+                              aria-describedby="fileHelpId"
+                            />
+                            <!-- <div id="fileHelpId" class="form-text">Help text</div> -->
+                          </div>
+
+                          <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="errorModalLabel">Error</h5>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                  Please choose a file.
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <a type="button" class="btn btn-danger" style="margin-top: 34%; user-select: none;" href="/">Back</a>
+                          <button
+                            onclick="uploadFile()"
+                            class="btn btn-primary"
+                            style="margin-top: -13%; margin-left: 75%; user-select: none;"
+                          >
+                            send package
+                          </button>
+                          
+                          <script>
+                            function uploadFile() 
+                            {
+                              var fileInput = document.getElementById('fileInput');
+                              var file = fileInput.files[0];
+                              if (file) {
+                                var formData = new FormData();
+                                formData.append('file', file);
+
+                                // Отправляем файл на сервер с помощью AJAX запроса
+                                var xhr = new XMLHttpRequest();
+                                xhr.open('POST', '/upload', true);
+                                xhr.onload = function () {
+                                    if (xhr.status === 200) {
+                                    console.log('Файл успешно загружен на сервер');
+                                    } else {
+                                    console.error('Произошла ошибка при загрузке файла на сервер');
+                                    }
+                                };
+                                xhr.send(formData);
+                                window.location.href = '/';
+                            } 
+                            else 
+                            {
+                                // Если файл не выбран, открываем модальное окно с сообщением об ошибке
+                                var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+                                errorModal.show();
+                            }
+                        }
+                        </script>
+                        
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="welcome_form">
+                        
+                        <img
+                          src="img/mail.png"
+                          class="img-fluid rounded-top"
+                          alt=""
+                          style="height: 400px; width: 400px; margin-left:60px; margin-top: 40px; user-select: none;"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                </div>
+            </div>
+        </main>
+        <footer>
+            <!-- place footer here -->
+        </footer>
+        <!-- Bootstrap JavaScript Libraries -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+            crossorigin="anonymous"
+        ></script>
+
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+            integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+            crossorigin="anonymous"
+        ></script>
+    </body>
+</html>

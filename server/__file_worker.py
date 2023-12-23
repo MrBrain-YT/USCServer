@@ -26,5 +26,22 @@ def file_worker(app):
                             root_dir=f"{files_path}/packages/{info.get("package_name")}")
         
         return send_file(f"{files_path}/archives/{info.get("package_name")}.zip", as_attachment=True)
+    
+    @app.route('/', methods = ['GET'])
+    def home():
+        with open(f"{os.path.dirname(os.path.abspath(__file__))}/src/home.html") as home:
+            return home.read()
+    
+    @app.route('/add', methods = ['GET'])
+    def add_package():
+        with open(f"{os.path.dirname(os.path.abspath(__file__))}/src/add.html") as home:
+            return home.read()
+        
+    @app.route('/upload', methods=['POST'])
+    def upload_file():
+        uploaded_file = request.files['file']
+        # Сохраняем файл на сервере
+        uploaded_file.save(f"{os.path.dirname(os.path.abspath(__file__))}/archives/{uploaded_file.filename}")
+        return 'File uploaded successfully'
         
         
