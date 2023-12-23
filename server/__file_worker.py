@@ -25,6 +25,6 @@ def file_worker(app):
         shutil.make_archive(f"{files_path}/archives/{info.get("package_name")}", 'zip',
                             root_dir=f"{files_path}/packages/{info.get("package_name")}")
         
-        return open(f"{files_path}/archives/{info.get("package_name")}.zip", "rb").read()
+        return send_file(f"{files_path}/archives/{info.get("package_name")}.zip", as_attachment=True)
         
         
