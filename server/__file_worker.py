@@ -2,6 +2,7 @@
 
 import shutil
 import os
+import tarfile
 
 from flask import request, send_file
 
@@ -22,10 +23,11 @@ def file_worker(app):
         #     file_path = os.path.join(files_path, filename)
         #     os.remove(file_path)
             
-        shutil.make_archive(f"{files_path}/archives/{info.get("package_name")}", 'zip',
-                            root_dir=f"{files_path}/packages/{info.get("package_name")}")
+        with tarfile.open(f"{files_path}/archives/{info.get("package_name")}.tar.gz", "w:gz") as tar:
+            source_dir = f"{files_path}/packages/{info.get("package_name")}"
+            tar.add(source_dir, arcname=os.path.basename(source_dir))
         
-        return send_file(f"{files_path}/archives/{info.get("package_name")}.zip", as_attachment=True)
+        return send_file(f"{files_path}/archives/{info.get("package_name")}.tar.gz", as_attachment=True)
     
     @app.route('/', methods = ['GET'])
     def home():
@@ -39,9 +41,9 @@ def file_worker(app):
         
     @app.route('/upload', methods=['POST'])
     def upload_file():
+        filename = request.form.get("filename")
         uploaded_file = request.files['file']
         # Сохраняем файл на сервере
-        uploaded_file.save(f"{os.path.dirname(os.path.abspath(__file__))}/archives/{uploaded_file.filename}")
+        uploaded_file.save(f"{os.path.dirname(os.path.abspath(__file__))}/archives/{filename}.tar.gz")
+        
         return 'File uploaded successfully'
-        
-        
