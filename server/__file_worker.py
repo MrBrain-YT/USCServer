@@ -4,8 +4,9 @@ import configparser
 import os
 import tarfile
 import shutil
+import time
 
-from flask import request, send_file
+from flask import request, send_file, jsonify, render_template
 
 def file_worker(app):
 
@@ -26,18 +27,26 @@ def file_worker(app):
     
     @app.route('/', methods = ['GET'])
     def home():
-        with open(f"{os.path.dirname(os.path.abspath(__file__))}/src/home.html") as home:
-            return home.read()
+        return render_template("home.html")
     
     @app.route('/add', methods = ['GET'])
     def add_package():
-        with open(f"{os.path.dirname(os.path.abspath(__file__))}/src/add.html") as add:
-            return add.read()
+        return render_template("add.html")
         
     @app.route('/list', methods = ['GET'])
     def list():
-        with open(f"{os.path.dirname(os.path.abspath(__file__))}/src/list.html") as list:
-            return list.read()
+        items = []
+        config_file = f"{os.path.dirname(os.path.abspath(__file__))}/packages/packages.ini"
+        packages_config = configparser.ConfigParser()
+        packages_config.read(config_file)
+        for package in packages_config.sections():
+            package_item = {
+                'name': packages_config[package].get("name"),
+                'version': packages_config[package].get("version")
+            }
+            items.append(package_item)
+
+        return render_template("list.html", items=items)
         
     @app.route('/upload', methods=['POST'])
     def upload_file():
@@ -86,3 +95,23 @@ def file_worker(app):
             shutil.rmtree(f"{dir_path}/{uploaded_file.filename.replace(".tar.gz", "")}")
         
         return 'File uploaded successfully'
+    
+    @app.route('/delete', methods=['POST'])
+    def delete_item():
+        data = request.json
+        package_name = data.get('itemName').lower()
+        # remove package from list
+        config_file = f"{os.path.dirname(os.path.abspath(__file__))}/packages/packages.ini"
+        packages_config = configparser.ConfigParser()
+        packages_config.read(config_file)
+        # remove section
+        if packages_config.has_section(package_name):
+            packages_config.remove_section(package_name)
+        
+        package_path = f"{os.path.dirname(os.path.abspath(__file__))}/packages/{package_name}"
+        if os.path.exists(package_path):
+            shutil.rmtree(package_path)
+
+        with open(config_file, 'w') as config_file:
+            packages_config.write(config_file)
+        return jsonify({'message': f'Deleted item: {package_name}'}), 200

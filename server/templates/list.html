@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>USCServer</title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+        />
+        <!-- Bootstrap CSS v5.2.1 -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+            crossorigin="anonymous"
+        />
+    </head>
+
+    <body>
+        <header>
+            <!-- place navbar here -->
+        </header>
+        <main class="d-flex justify-content-center" style="margin-top: 200px">
+            <div class="card" style="width: 1050px; height: 560px; margin-left: 20px">
+                <div class="card-header">
+                  Package list
+                </div>
+                <div class="card-body">
+                  <h3 class="d-flex justify-content-center" style="user-select: none;">Packages list</h3>
+                  <div class="row">
+                    <div class="col-md-6" style="width: 600px">
+                      <div class="image" style="margin-top: 50px;">
+
+                        <!-- search -->
+                        <form class="d-flex" role="search" onsubmit="return false;">
+                          <input class="form-control me-2" id="searchInput" type="search" placeholder="Search" aria-label="Search" onkeypress="handleKeyPress(event)" oninput="inputCheck(this)">
+                          <button class="btn btn-outline-success" type="button" onclick="filterList()">Search</button>
+                        </form>
+
+                        <br>
+
+                        <!-- list packages -->
+                        <div id="packageList" data-bs-spy="scroll" data-bs-target="#navbar-example2" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" class="scrollspy-example bg-body-tertiary p-3 rounded-2" tabindex="0" style="height: 270px; overflow-y: scroll;">
+                          <style>
+                            .scrollspy-example::-webkit-scrollbar {
+                              width: 0.01em;
+                            }
+                          </style>
+                          <ol class="list-group" id="listGroup">
+                            <!-- <li class="list-group-item d-flex justify-content-between align-items-center">
+                              <div>
+                                <span class="me-3" style="user-select: none;">URSystem</span>
+                                <span class="text-muted small" style="user-select: none;">0.0.1</span>
+                              </div>
+                              <button class="btn btn-danger btn-sm" onclick="removeItem(this)">Delete</button>
+                            </li> -->
+
+
+                            {% for item in items %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                  <div>
+                                    <span class="me-3" style="user-select: none;">{{ item.name }}</span>
+                                    <span class="text-muted small" style="user-select: none;">{{ item.version }}</span>
+                                  </div>
+                                  <button class="btn btn-danger btn-sm" onclick="removeItem(this)">Delete</button>
+                                </li>
+                            {% endfor %}
+
+
+                            
+                            <!-- Добавьте другие элементы списка, если нужно -->
+                          </ol>
+                        </div>
+
+                        <script>
+                          function removeItem(button) {
+                            const itemName = button.parentNode.querySelector('span:first-child').textContent.trim();
+                            const listItem = button.closest('li');
+                        
+                            // Добавляем анимацию загрузки
+                            const loader = document.createElement('span');
+                            loader.classList.add('spinner-border', 'spinner-border-sm', 'me-2');
+                            button.textContent = 'Deleting...';
+                            button.disabled = true;
+                            button.insertBefore(loader, button.firstChild);
+                        
+                            // Отправляем запрос на сервер
+                            fetch('/delete', {
+                              method: 'POST',
+                              headers: {
+                                'Content-Type': 'application/json'
+                              },
+                              body: JSON.stringify({ itemName: itemName })
+                            })
+                            .then(response => {
+                              if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                              }
+                              return response.json();
+                            })
+                            .then(data => {
+                              console.log('Server response:', data);
+                              // Удаляем анимацию загрузки и сообщение о загрузке
+                              loader.remove();
+                              button.textContent = 'Delete';
+                              button.disabled = false;
+                        
+                              // Удаляем элемент из списка после успешного удаления
+                              listItem.remove();
+                              button.closest('li').remove();
+                            })
+                            .catch(error => {
+                              console.error('Error:', error);
+                              // Удаляем анимацию загрузки и сообщение о загрузке
+                              loader.remove();
+                              button.textContent = 'Delete';
+                              button.disabled = false;
+                            });
+                          }
+                          
+                          function handleKeyPress(event) {
+                            if (event.key === 'Enter') {
+                              filterList();
+                            }
+                          }
+
+                          function inputCheck(item){
+                            if (item.value == ""){
+                              filterList();
+                            }
+                          }
+
+                          function filterList() {
+                            const searchText = document.getElementById('searchInput').value.toLowerCase();
+                            const listItems = document.querySelectorAll('#listGroup .list-group-item');
+                            listItems.forEach(function(item) {
+                              const itemName = item.querySelector('span:first-child').textContent.toLowerCase();
+                              if (itemName.includes(searchText)) {
+                                item.style.setProperty('display', 'flex', 'important');
+                              } else {
+                                item.style.setProperty('display', 'none', 'important');
+                              }
+                            });
+                          }
+                        </script>
+
+                          <br>
+                          <a type="button" class="btn btn-danger" style=" user-select: none;" href="/">Back</a>
+                          
+                        
+                      </div>
+                    </div>
+                    <div class="col-md-6" style="width: 430px;">
+                      <div class="welcome_form">
+                        
+                        <img
+
+                          src="img/list.png"
+                          class="img-fluid rounded-top"
+                          alt=""
+                          style="height: 400px; width: 340px; margin-left:30px; margin-top: 20px; user-select: none;"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                </div>
+            </div>
+        </main>
+        <footer>
+            <!-- place footer here -->
+        </footer>
+        <!-- Bootstrap JavaScript Libraries -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+            crossorigin="anonymous"
+        ></script>
+
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+            integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+            crossorigin="anonymous"
+        ></script>
+    </body>
+</html>
