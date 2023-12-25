@@ -1,18 +1,13 @@
 # app - copy class Flask
 
-import shutil
+import configparser
 import os
 import tarfile
+import shutil
 
 from flask import request, send_file
 
 def file_worker(app):
-    
-    def reset(tarinfo):
-        # Reset info for tar.gz archive
-        tarinfo.uid = tarinfo.gid = 0
-        tarinfo.uname = tarinfo.gname = "root"
-        return tarinfo
 
     @app.route('/package', methods = ['POST'])
     def send_package():
@@ -36,14 +31,58 @@ def file_worker(app):
     
     @app.route('/add', methods = ['GET'])
     def add_package():
-        with open(f"{os.path.dirname(os.path.abspath(__file__))}/src/add.html") as home:
-            return home.read()
+        with open(f"{os.path.dirname(os.path.abspath(__file__))}/src/add.html") as add:
+            return add.read()
+        
+    @app.route('/list', methods = ['GET'])
+    def list():
+        with open(f"{os.path.dirname(os.path.abspath(__file__))}/src/list.html") as list:
+            return list.read()
         
     @app.route('/upload', methods=['POST'])
     def upload_file():
-        filename = request.form.get("filename")
         uploaded_file = request.files['file']
-        # Сохраняем файл на сервере
-        uploaded_file.save(f"{os.path.dirname(os.path.abspath(__file__))}/archives/{filename}.tar.gz")
+        # save file
+        tar_file_path = f"{os.path.dirname(os.path.abspath(__file__))}/archives/{uploaded_file.filename}"
+        uploaded_file.save(tar_file_path)
+        
+        # extrcting tar file for check
+        dir_path = f"{os.path.dirname(os.path.abspath(__file__))}/temp"
+        file = tarfile.open(tar_file_path) 
+        file.extractall(dir_path) 
+        file.close()
+        
+        # Check package
+        if os.path.exists(f"{dir_path}/{uploaded_file.filename.replace(".tar.gz", "")}/package.ini"):
+            config = configparser.ConfigParser()
+            config.read(f"{dir_path}/{uploaded_file.filename.replace(".tar.gz", "")}/package.ini")
+            package_name = config["INFO"].get("name")
+            package_version = config["INFO"].get("version")
+            print(package_name, package_version)
+            if package_name and package_version != None:
+                # add package to list
+                config_file = f"{os.path.dirname(os.path.abspath(__file__))}/packages/packages.ini"
+                packages_config = configparser.ConfigParser()
+                packages_config.read(config_file)
+                packages_config[package_name] = {
+                    "name" : package_name,
+                    "version" : package_version
+                }
+                with open(config_file, 'w') as configfile:
+                    packages_config.write(configfile)
+                
+                # extrcting tar file to packages
+                new_dir_path = f"{os.path.dirname(os.path.abspath(__file__))}/packages"
+                file = tarfile.open(tar_file_path)
+                file.extractall(new_dir_path)
+                file.close()
+                os.remove(tar_file_path)
+                shutil.rmtree(f"{dir_path}/{uploaded_file.filename.replace(".tar.gz", "")}")
+            else:
+                os.remove(tar_file_path)
+                shutil.rmtree(f"{dir_path}/{uploaded_file.filename.replace(".tar.gz", "")}")
+        else:
+            os.remove(tar_file_path)
+            shutil.rmtree(f"{dir_path}/{uploaded_file.filename.replace(".tar.gz", "")}")
         
         return 'File uploaded successfully'

@@ -32,20 +32,8 @@
                     <div class="col-md-6">
                       <div class="image" style="margin-top: 50px;">
                         <p class="card-text" style=" user-select: none;">To add a package, transfer the tar.gz archive to a special form and write package name.</p>
-                        
+
                         <div class="mb-3" style="margin-top: 12%">
-                          <label for="" class="form-label">Filename</label>
-                          <input
-                            type="text"
-                            class="form-control"
-                            name=""
-                            id="filename_input"
-                            placeholder=""
-                          />
-                        </div>
-                        
-                        
-                        <div class="mb-3" style="margin-top: 1%">
                             <label for="fileInput" class="form-label">Choose file</label>
                             <input
                               type="file"
@@ -55,8 +43,8 @@
                               accept=".tar.gz"
                               aria-describedby="fileHelpId"
                             />
-                            <!-- <div id="fileHelpId" class="form-text">Help text</div> -->
                           </div>
+
                           <!-- modal no file -->
                           <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
@@ -74,25 +62,8 @@
                               </div>
                             </div>
                           </div>
-                          <!-- modal no FileName -->
-                          <div class="modal fade" id="errorFileName" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                              <div class="modal-content">
-                                <div class="modal-header">
-                                  <h5 class="modal-title" id="errorModalLabel">Error</h5>
-                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                  Please write a filename.
-                                </div>
-                                <div class="modal-footer">
-                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
 
-                          <a type="button" class="btn btn-danger" style="margin-top: 16%; user-select: none;" href="/">Back</a>
+                          <a type="button" class="btn btn-danger" style="margin-top: 33%; user-select: none;" href="/">Back</a>
                           <button
                             onclick="uploadFile()"
                             class="btn btn-primary"
@@ -105,45 +76,35 @@
                             function uploadFile() 
                             {
                               var fileInput = document.getElementById('fileInput');
-                              var filename_input = document.getElementById('filename_input');
                               var file = fileInput.files[0];
-                              var filename = filename_input.value;
-                              if (filename != ""){
 
-                                if (file) 
-                                {
-                                  var formData = new FormData();
-                                  formData.append('file', file);
-                                  formData.append('filename', filename);
-
-                                  // Отправляем файл на сервер с помощью AJAX запроса
-                                  var xhr = new XMLHttpRequest();
-                                  xhr.open('POST', '/upload', true);
-                                  xhr.onload = function () 
-                                  {
-                                    if (xhr.status === 200) 
-                                    {
-                                      console.log('Файл успешно загружен на сервер');
-                                    } 
-                                    else 
-                                    {
-                                      console.error('Произошла ошибка при загрузке файла на сервер');
-                                    }
-                                  };
-                                  xhr.send(formData);
-                                  window.location.href = '/';
-                                } 
-                                else 
-                                {
-                                    // Если файл не выбран, открываем модальное окно с сообщением об ошибке
-                                    var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
-                                    errorModal.show();
-                                }
-                              }
-                              else
+                              if (file) 
                               {
-                                var errorModal = new bootstrap.Modal(document.getElementById('errorFileName'));
-                                errorModal.show();
+                                var formData = new FormData();
+                                formData.append('file', file);
+
+                                // Отправляем файл на сервер с помощью AJAX запроса
+                                var xhr = new XMLHttpRequest();
+                                xhr.open('POST', '/upload', true);
+                                xhr.onload = function () 
+                                {
+                                  if (xhr.status === 200) 
+                                  {
+                                    console.log('Файл успешно загружен на сервер');
+                                  } 
+                                  else 
+                                  {
+                                    console.error('Произошла ошибка при загрузке файла на сервер');
+                                  }
+                                };
+                                xhr.send(formData);
+                                window.location.href = '/';
+                              } 
+                              else 
+                              {
+                                  // Если файл не выбран, открываем модальное окно с сообщением об ошибке
+                                  var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+                                  errorModal.show();
                               }
                             }
                           </script>

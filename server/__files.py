@@ -10,3 +10,7 @@ def files(app):
     @app.route('/img/mail.png', methods = ['GET'])
     def MailImg():
         return send_file(f"{os.path.dirname(os.path.abspath(__file__))}/src/img/mail.png")
+    
+    @app.route('/img/list.png', methods = ['GET'])
+    def ListImg():
+        return send_file(f"{os.path.dirname(os.path.abspath(__file__))}/src/img/list.png")

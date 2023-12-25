@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>USCServer</title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+        />
+        <!-- Bootstrap CSS v5.2.1 -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+            crossorigin="anonymous"
+        />
+    </head>
+
+    <body>
+        <header>
+            <!-- place navbar here -->
+        </header>
+        <main class="d-flex justify-content-center" style="margin-top: 200px">
+            <div class="card" style="width: 1050px; height: 560px; margin-left: 20px">
+                <div class="card-header">
+                  Package list
+                </div>
+                <div class="card-body">
+                  <h3 class="d-flex justify-content-center" style="user-select: none;">Packages list</h3>
+                  <div class="row">
+                    <div class="col-md-6" style="width: 600px">
+                      <div class="image" style="margin-top: 50px;">
+
+                        <!-- search -->
+                        <form class="d-flex" role="search">
+                          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                          <button class="btn btn-outline-success" type="submit">Search</button>
+                        </form>
+                        
+                        <br>
+                        <!-- list packages -->
+                        <div data-bs-spy="scroll" data-bs-target="#navbar-example2" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" class="scrollspy-example bg-body-tertiary p-3 rounded-2" tabindex="0" style="height: 270px; overflow-y: scroll;" ::-webkit-scrollbar="width: 0.01em;">
+                          <style>
+                            .scrollspy-example::-webkit-scrollbar {
+                              width: 0.01em;
+                            }
+                          </style>
+                          <ol class="list-group list-group-numbered">
+                            <li class="list-group-item d-flex justify-content-between align-items-center" style=" text-align: start;">
+                              A list item
+                              <button class="btn btn-danger btn-sm" onclick="removeItem(this.parentNode)">Delete</button>
+                            </li>
+                            
+                            <!-- Добавьте еще элементы списка, если нужно -->
+                          </ol>
+                        </div>
+                        
+                        
+                        
+                        
+
+
+                          <br>
+                          <a type="button" class="btn btn-danger" style=" user-select: none;" href="/">Back</a>
+                          
+                        
+                      </div>
+                    </div>
+                    <div class="col-md-6" style="width: 430px;">
+                      <div class="welcome_form">
+                        
+                        <img
+
+                          src="img/list.png"
+                          class="img-fluid rounded-top"
+                          alt=""
+                          style="height: 400px; width: 400px; margin-left:0px; margin-top: 20px; user-select: none;"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                </div>
+            </div>
+        </main>
+        <footer>
+            <!-- place footer here -->
+        </footer>
+        <!-- Bootstrap JavaScript Libraries -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+            crossorigin="anonymous"
+        ></script>
+
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+            integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+            crossorigin="anonymous"
+        ></script>
+    </body>
+</html>
