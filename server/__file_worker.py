@@ -32,9 +32,13 @@ def file_worker(app):
     @app.route('/add', methods = ['GET'])
     def add_package():
         return render_template("add.html")
+    
+    @app.route('/addFromList', methods = ['GET'])
+    def addFromList_package():
+        return render_template("add_from_list.html")
         
     @app.route('/list', methods = ['GET'])
-    def list():
+    def list_site():
         items = []
         config_file = f"{os.path.dirname(os.path.abspath(__file__))}/packages/packages.ini"
         packages_config = configparser.ConfigParser()
@@ -67,7 +71,6 @@ def file_worker(app):
             config.read(f"{dir_path}/{uploaded_file.filename.replace(".tar.gz", "")}/package.ini")
             package_name = config["INFO"].get("name")
             package_version = config["INFO"].get("version")
-            print(package_name, package_version)
             if package_name and package_version != None:
                 # add package to list
                 config_file = f"{os.path.dirname(os.path.abspath(__file__))}/packages/packages.ini"
@@ -82,9 +85,14 @@ def file_worker(app):
                 
                 # extrcting tar file to packages
                 new_dir_path = f"{os.path.dirname(os.path.abspath(__file__))}/packages"
+                old_dirs = [name for name in os.listdir(new_dir_path)]
                 file = tarfile.open(tar_file_path)
                 file.extractall(new_dir_path)
                 file.close()
+                new_dirs = [name for name in os.listdir(new_dir_path)]
+                foldder_name = set(new_dirs) - set(old_dirs)
+                new_folder_name = list(foldder_name)[0]
+                os.rename(f"{new_dir_path}/{new_folder_name}", f"{new_dir_path}/{package_name}")
                 os.remove(tar_file_path)
                 shutil.rmtree(f"{dir_path}/{uploaded_file.filename.replace(".tar.gz", "")}")
             else:

@@ -64,52 +64,61 @@
                           </div>
 
                           
-                          <a type="button" class="btn btn-danger" style="margin-top: 33%; user-select: none;" href="/">Back</a>
+                          <a type="button" class="btn btn-danger" style="margin-top: 33%; user-select: none;" href="/list">Back</a>
                           <button
-                            onclick="uploadFile()"
+                            onclick="uploadFile(this)"
                             class="btn btn-primary"
                             style="margin-top: -13%; margin-left: 75%; user-select: none;"
+                            id="sendButton"
                           >
                             send package
                           </button>
                           
                           <script>
-                            function uploadFile() 
-                            {
+                            function uploadFile(button) {
                               var fileInput = document.getElementById('fileInput');
                               var file = fileInput.files[0];
+                              
+                              if (file) {
+                                const loader = document.createElement('span');
+                                loader.classList.add('spinner-border', 'spinner-border-sm', 'me-2');
+                                button.textContent = 'Adding...';
+                                button.disabled = true;
+                                button.insertBefore(loader, button.firstChild);
 
-                              if (file) 
-                              {
+                                var sendButton = document.getElementById('sendButton');
+                                sendButton.classList.add('loading'); // Добавляем класс для анимации загрузки
+                            
                                 var formData = new FormData();
                                 formData.append('file', file);
-
+                            
                                 // Отправляем файл на сервер с помощью AJAX запроса
                                 var xhr = new XMLHttpRequest();
                                 xhr.open('POST', '/upload', true);
-                                xhr.onload = function () 
-                                {
-                                  if (xhr.status === 200) 
-                                  {
+                                xhr.onload = function () {
+                                  if (xhr.status === 200) {
                                     console.log('Файл успешно загружен на сервер');
-                                    window.location.href = '/';
-                                  } 
-                                  else 
-                                  {
+                                    loader.remove();
+                                    button.textContent = 'Add package';
+                                    button.disabled = false;
+                                    window.location.href = '/list';
+                                  } else {
+                                    loader.remove();
+                                    button.textContent = 'Add package';
+                                    button.disabled = false;
                                     console.error('Произошла ошибка при загрузке файла на сервер');
                                   }
+                                  sendButton.classList.remove('loading'); // Удаляем класс после завершения загрузки
                                 };
                                 xhr.send(formData);
-                                
-                              } 
-                              else 
-                              {
-                                  // Если файл не выбран, открываем модальное окно с сообщением об ошибке
-                                  var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
-                                  errorModal.show();
+                              } else {
+                                // Если файл не выбран, открываем модальное окно с сообщением об ошибке
+                                var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+                                errorModal.show();
                               }
-                            }
+                            }                            
                           </script>
+                          
                         
                       </div>
                     </div>
@@ -134,7 +143,7 @@
         </footer>
         <!-- Bootstrap JavaScript Libraries -->
         <script
-            src="./src/pooper.min.js"
+            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
             integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
             crossorigin="anonymous"
         ></script>
