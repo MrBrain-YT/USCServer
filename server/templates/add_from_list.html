@@ -21,7 +21,7 @@
         <header>
             <!-- place navbar here -->
         </header>
-        <main class="d-flex justify-content-center" style="margin-top: 200px">
+        <main class="main_block d-flex justify-content-center" style="margin-top: 200px">
             <div class="card" style="width: 1050px; height: 560px; margin-left: 20px">
                 <div class="card-header">
                   Add package
@@ -45,26 +45,7 @@
                             />
                           </div>
 
-                          <!-- modal no file -->
-                          <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                              <div class="modal-content">
-                                <div class="modal-header">
-                                  <h5 class="modal-title" id="errorModalLabel">Error</h5>
-                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                  Please choose a file.
-                                </div>
-                                <div class="modal-footer">
-                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          
-                          <a type="button" class="btn btn-danger" style="margin-top: 33%; user-select: none;" href="/list">Back</a>
+                          <button type="button" class="btn btn-danger" style="margin-top: 33%; user-select: none;" id="back_button">Back</button>
                           <button
                             onclick="uploadFile(this)"
                             class="btn btn-primary"
@@ -138,6 +119,66 @@
                 </div>
             </div>
         </main>
+
+        <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">Error</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                Please choose a file.
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <style>
+          .main_block{
+            animation: animate 0.5s linear forwards;
+          }
+
+          @keyframes animate{
+            0% {
+              transform: translateX(80%);
+            }
+            100% {
+              transform: translateX(0%);
+            }
+          }
+
+          /* Добавляем класс для анимации съезда блока */
+          .slide-out {
+            animation: slideOut 0.5s forwards;
+          }
+
+          @keyframes slideOut {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-80%);
+            }
+          }
+
+        </style>
+
+        <script>
+          var back_button = document.getElementById('back_button');
+
+          back_button.addEventListener('click', function() {
+            var mainBlock = document.querySelector('.main_block');
+            mainBlock.classList.add('slide-out');
+            mainBlock.addEventListener('animationend', function() {
+              window.location.href = 'list';
+            }, { once: true });
+          });
+        </script>
+
         <footer>
             <!-- place footer here -->
         </footer>

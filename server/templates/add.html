@@ -43,9 +43,7 @@
                               role="tab"
                               aria-controls="home"
                               aria-selected="true"
-                            >
-                              From file
-                            </button>
+                            >From file</button>
                           </li>
                           <li class="nav-item" role="presentation">
                             <button
@@ -57,9 +55,7 @@
                               role="tab"
                               aria-controls="profile"
                               aria-selected="false"
-                            >
-                              From GitHub
-                            </button>
+                            >From GitHub</button>
                           </li>
                         </ul>
                         
@@ -97,10 +93,10 @@
                             <div class="mb-3" style="margin-top: 12%">
                               <label for="" class="form-label">GitHub url</label>
                               <input
-                                type="text"
+                                type="url"
                                 class="form-control"
                                 name=""
-                                id=""
+                                id="url_input"
                                 aria-describedby="helpId"
                                 placeholder=""
                               />
@@ -108,31 +104,7 @@
                             
                           </div>
                         </div>
-                        
-
-                        
-
-                          <!-- modal no file -->
-                          <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                              <div class="modal-content">
-                                <div class="modal-header">
-                                  <h5 class="modal-title" id="errorModalLabel">Error</h5>
-                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                  Please choose a file.
-                                </div>
-                                <div class="modal-footer">
-                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          
-                          
-                        
+                      
                       </div>
                       <button type="button" class="btn btn-danger" style="margin-top: 31%; user-select: none;" id="back_button">Back</button>
                           <button
@@ -146,37 +118,69 @@
                           <script>
                             function uploadFile() 
                             {
+                              var url = document.getElementById('url_input');
                               var fileInput = document.getElementById('fileInput');
                               var file = fileInput.files[0];
-
-                              if (file) 
+                              var myTab = new bootstrap.Tab(document.getElementById('myTab'));
+                              var activeTab = document.querySelector('.nav-tabs .nav-link.active');
+                              console.log(activeTab.textContent); // Выводит текст активного таба
+                              if (activeTab.textContent == "From file")
                               {
-                                var formData = new FormData();
-                                formData.append('file', file);
-
-                                // Отправляем файл на сервер с помощью AJAX запроса
-                                var xhr = new XMLHttpRequest();
-                                xhr.open('POST', '/upload', true);
-                                xhr.onload = function () 
+                                if (file) 
                                 {
-                                  if (xhr.status === 200) 
+                                  var formData = new FormData();
+                                  formData.append('file', file);
+
+                                  // Отправляем файл на сервер с помощью AJAX запроса
+                                  var xhr = new XMLHttpRequest();
+                                  xhr.open('POST', '/upload', true);
+                                  xhr.onload = function () 
                                   {
-                                    console.log('Файл успешно загружен на сервер');
-                                    window.location.href = '/';
-                                  } 
-                                  else 
-                                  {
-                                    console.error('Произошла ошибка при загрузке файла на сервер');
-                                  }
-                                };
+                                    if (xhr.status === 200) 
+                                    {
+                                      console.log('Файл успешно загружен на сервер');
+                                      window.location.href = '/';
+                                    } 
+                                    else 
+                                    {
+                                      console.error('Произошла ошибка при загрузке файла на сервер');
+                                    }
+                                  };
                                 xhr.send(formData);
-                                
-                              } 
-                              else 
-                              {
+                                } 
+                                else 
+                                {
                                   // Если файл не выбран, открываем модальное окно с сообщением об ошибке
                                   var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
                                   errorModal.show();
+                                }
+                              }
+                              else
+                              {
+                                if(url.value != "")
+                                {
+                                  var data = { "url": url.value }; // Создаем объект данных для отправки на сервер
+
+                                  var xhr = new XMLHttpRequest();
+                                  xhr.open('POST', '/from_repo', true);
+                                  xhr.setRequestHeader('Content-Type', 'application/json'); // Устанавливаем заголовок Content-Type для указания формата данных
+                                  xhr.onreadystatechange = function() {
+                                    if (xhr.readyState === 4) { // Проверяем состояние запроса
+                                      if (xhr.status === 200) {
+                                        console.log('Репозиторий успешно загружен');
+                                        window.location.href = '/'; // Перенаправляем пользователя на главную страницу
+                                      } else {
+                                        console.error('Произошла ошибка при загрузке репозитория');
+                                      }
+                                    }
+                                  };
+                                  xhr.send(JSON.stringify(data)); // Отправляем данные на сервер в виде строки JSON
+                                }
+                                else
+                                {
+                                  var errorModal = new bootstrap.Modal(document.getElementById('errorModal_url'));
+                                  errorModal.show();
+                                }
                               }
                             }
                           </script>
@@ -197,9 +201,49 @@
                 </div>
             </div>
         </main>
+
+          <!-- modal no file -->
+          <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="errorModalLabel">Error</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  Please choose a file.
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- modal no url -->
+          <div class="modal fade" id="errorModal_url" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="errorModalLabel">Error</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  Please write GitHub url.
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
         <style>
+          body{
+            overflow-x:hidden;
+          }
           .main_block{
-            animation: animate 0.8s linear forwards;
+            animation: animate 0.5s linear forwards;
           }
 
           @keyframes animate{
@@ -213,7 +257,7 @@
 
           /* Добавляем класс для анимации съезда блока */
           .slide-out {
-            animation: slideOut 1s forwards;
+            animation: slideOut 0.5s forwards;
           }
 
           @keyframes slideOut {
@@ -229,7 +273,6 @@
 
         <script>
           var back_button = document.getElementById('back_button');
-          var add_packages_button = document.getElementById('add_packages_button');
 
           back_button.addEventListener('click', function() {
             var mainBlock = document.querySelector('.main_block');
