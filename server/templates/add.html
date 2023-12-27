@@ -21,7 +21,7 @@
         <header>
             <!-- place navbar here -->
         </header>
-        <main class="d-flex justify-content-center" style="margin-top: 200px">
+        <main class="main_block d-flex justify-content-center" style="margin-top: 200px">
             <div class="card" style="width: 1050px; height: 560px; margin-left: 20px">
                 <div class="card-header">
                   Add package
@@ -30,20 +30,87 @@
                   <h3 class="d-flex justify-content-center" style="user-select: none;">Add package</h3>
                   <div class="row">
                     <div class="col-md-6">
-                      <div class="image" style="margin-top: 50px;">
-                        <p class="card-text" style=" user-select: none;">To add a package, transfer the tar.gz archive to a special form and write package name.</p>
+                      <div class="image" style="margin-top: 50px; height:37%">
+                        <!-- Nav tabs -->
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                          <li class="nav-item" role="presentation">
+                            <button
+                              class="nav-link active"
+                              id="home-tab"
+                              data-bs-toggle="tab"
+                              data-bs-target="#home"
+                              type="button"
+                              role="tab"
+                              aria-controls="home"
+                              aria-selected="true"
+                            >
+                              From file
+                            </button>
+                          </li>
+                          <li class="nav-item" role="presentation">
+                            <button
+                              class="nav-link"
+                              id="profile-tab"
+                              data-bs-toggle="tab"
+                              data-bs-target="#profile"
+                              type="button"
+                              role="tab"
+                              aria-controls="profile"
+                              aria-selected="false"
+                            >
+                              From GitHub
+                            </button>
+                          </li>
+                        </ul>
+                        
+                        <!-- Tab panes -->
+                        <div class="tab-content">
+                          <div
+                            class="tab-pane active"
+                            id="home"
+                            role="tabpanel"
+                            aria-labelledby="home-tab"
+                          >
+                            <br>
+                            <p class="card-text" style=" user-select: none;">To add a package, transfer the tar.gz archive to a special form.</p>
 
-                        <div class="mb-3" style="margin-top: 12%">
-                            <label for="fileInput" class="form-label">Choose file</label>
-                            <input
-                              type="file"
-                              class="form-control"
-                              id="fileInput"
-                              placeholder=""
-                              accept=".tar.gz"
-                              aria-describedby="fileHelpId"
-                            />
+                            <div class="mb-3" style="margin-top: 12%">
+                                <label for="fileInput" class="form-label">Choose file</label>
+                                <input
+                                  type="file"
+                                  class="form-control"
+                                  id="fileInput"
+                                  placeholder=""
+                                  accept=".tar.gz"
+                                  aria-describedby="fileHelpId"
+                                />
+                              </div>
+                            </div>
+                          <div
+                            class="tab-pane"
+                            id="profile"
+                            role="tabpanel"
+                            aria-labelledby="profile-tab"
+                          >
+                            <br>
+                            <p class="card-text" style=" user-select: none;">To add a package, enter the GitHub repository URL.</p>
+                            <div class="mb-3" style="margin-top: 12%">
+                              <label for="" class="form-label">GitHub url</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                name=""
+                                id=""
+                                aria-describedby="helpId"
+                                placeholder=""
+                              />
+                            </div>
+                            
                           </div>
+                        </div>
+                        
+
+                        
 
                           <!-- modal no file -->
                           <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
@@ -64,7 +131,10 @@
                           </div>
 
                           
-                          <a type="button" class="btn btn-danger" style="margin-top: 33%; user-select: none;" href="/">Back</a>
+                          
+                        
+                      </div>
+                      <button type="button" class="btn btn-danger" style="margin-top: 31%; user-select: none;" id="back_button">Back</button>
                           <button
                             onclick="uploadFile()"
                             class="btn btn-primary"
@@ -110,8 +180,6 @@
                               }
                             }
                           </script>
-                        
-                      </div>
                     </div>
                     <div class="col-md-6">
                       <div class="welcome_form">
@@ -129,12 +197,55 @@
                 </div>
             </div>
         </main>
+        <style>
+          .main_block{
+            animation: animate 0.8s linear forwards;
+          }
+
+          @keyframes animate{
+            0% {
+              transform: translateX(80%);
+            }
+            100% {
+              transform: translateX(0%);
+            }
+          }
+
+          /* Добавляем класс для анимации съезда блока */
+          .slide-out {
+            animation: slideOut 1s forwards;
+          }
+
+          @keyframes slideOut {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-80%);
+            }
+          }
+
+        </style>
+
+        <script>
+          var back_button = document.getElementById('back_button');
+          var add_packages_button = document.getElementById('add_packages_button');
+
+          back_button.addEventListener('click', function() {
+            var mainBlock = document.querySelector('.main_block');
+            mainBlock.classList.add('slide-out');
+            mainBlock.addEventListener('animationend', function() {
+              window.location.href = '/';
+            }, { once: true });
+          });
+        </script>
+
         <footer>
             <!-- place footer here -->
         </footer>
         <!-- Bootstrap JavaScript Libraries -->
         <script
-            src="./src/pooper.min.js"
+            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
             integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
             crossorigin="anonymous"
         ></script>

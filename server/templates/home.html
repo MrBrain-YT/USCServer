@@ -21,7 +21,7 @@
         <header>
             <!-- place navbar here -->
         </header>
-        <main class="d-flex justify-content-center" style="margin-top: 200px">
+        <main class="main_block d-flex justify-content-center" style="margin-top: 200px">
             <div class="card" style="width: 1050px; height: 560px; margin-left: 20px">
                 <div class="card-header">
                   Welcome
@@ -32,17 +32,19 @@
                     <div class="col-md-6">
                       <div class="image" style="margin-top: 50px;">
                         <p class="card-text" style=" user-select: none;">This server is designed to share various packages compatible with United Systems Core.</p>
-                            <a href="add" 
+                            <button
+                                id="add_packages_button" 
                                 class="btn btn-primary"
                                 style="margin-top: 59%; margin-left: 75%; user-select: none;"
-                                >add package</a>
-                            <a href="list" 
+                                >add package</button>
+                            <button
+                                id="packages_list_button" 
                                 class="btn btn-primary"
                                 style="margin-top: -13.5%; margin-left: 50%; user-select: none;"
-                                >packages list</a>
+                                >packages list</button>
                         
                       </div>
-                      <a type="button" class="btn btn-dark" style="margin-top: -23.3%; margin-left: 33%; user-select: none;" href="https://github.com/MrBrain-YT/USCServer">GitHub</a>
+                      <button type="button" class="btn btn-dark" id="git_Button" style="margin-top: -23.3%; margin-left: 33%; user-select: none;">GitHub</button>
                     </div>
                     
                     <div class="col-md-6">
@@ -76,5 +78,80 @@
             integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
             crossorigin="anonymous"
         ></script>
+
+        <!-- style for main_block -->
+
+        <style>
+          .main_block{
+            animation: animate 0.8s linear forwards;
+          }
+
+          @keyframes animate{
+            0%{
+              transform:  scale(0);
+              
+            }
+
+            25% {
+              transform:  scale(0.25);
+            }
+
+            50% {
+              transform:  scale(0.5);
+            }
+
+            100%{
+              
+              transform:  scale(1);
+              
+            }
+          }
+
+          /* Добавляем класс для анимации съезда блока */
+          .slide-out {
+            animation: slideOut 1s forwards;
+          }
+
+          @keyframes slideOut {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-80%);
+            }
+          }
+
+        </style>
+
+        <script>
+          var gitButton = document.getElementById('git_Button');
+          var packages_list_button = document.getElementById('packages_list_button');
+          var add_packages_button = document.getElementById('add_packages_button');
+
+          gitButton.addEventListener('click', function() {
+            var mainBlock = document.querySelector('.main_block');
+            mainBlock.classList.add('slide-out');
+            mainBlock.addEventListener('animationend', function() {
+              window.location.href = 'https://github.com/MrBrain-YT/USCServer';
+            }, { once: true });
+          });
+
+          packages_list_button.addEventListener('click', function() {
+            var mainBlock = document.querySelector('.main_block');
+            mainBlock.classList.add('slide-out');
+            mainBlock.addEventListener('animationend', function() {
+              window.location.href = 'list';
+            }, { once: true });
+          });
+
+          add_packages_button.addEventListener('click', function() {
+            var mainBlock = document.querySelector('.main_block');
+            mainBlock.classList.add('slide-out');
+            mainBlock.addEventListener('animationend', function() {
+              window.location.href = 'add';
+            }, { once: true });
+          });
+        </script>
+
     </body>
 </html>

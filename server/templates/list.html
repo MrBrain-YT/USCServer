@@ -21,7 +21,7 @@
         <header>
             <!-- place navbar here -->
         </header>
-        <main class="d-flex justify-content-center" style="margin-top: 200px">
+        <main class="main_block d-flex justify-content-center" style="margin-top: 200px">
             <div class="card" style="width: 1050px; height: 560px; margin-left: 20px">
                 <div class="card-header">
                   Package list
@@ -146,8 +146,8 @@
                         </script>
 
                           <br>
-                          <a type="button" class="btn btn-primary" style="margin-top: 0%; margin-left: 79%; user-select: none;" href="addFromList">Add package</a>
-                          <a type="button" class="btn btn-danger" style="margin-top: -11%; user-select: none;" href="/">Back</a>
+                          <button type="button" class="btn btn-primary" style="margin-top: 0%; margin-left: 79%; user-select: none;" id="add_list_button">Add package</button>
+                          <button type="button" class="btn btn-danger" style="margin-top: -11%; user-select: none;" id="back_button">Back</button>
                           
                         
                       </div>
@@ -169,6 +169,63 @@
                 </div>
             </div>
         </main>
+
+        <style>
+
+          body{
+            overflow-x:hidden;
+          }
+
+          .main_block{
+            animation: animate 1s linear forwards;
+          }
+
+          @keyframes animate{
+            0% {
+              transform: translateX(80%);
+            }
+            100% {
+              transform: translateX(0%);
+            }
+          }
+
+          /* Добавляем класс для анимации съезда блока */
+          .slide-out {
+            animation: slideOut 1s forwards;
+          }
+
+          @keyframes slideOut {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-80%);
+            }
+          }
+
+        </style>
+
+        <script>
+          var back_button = document.getElementById('back_button');
+          var add_packages_button = document.getElementById('add_list_button');
+
+          back_button.addEventListener('click', function() {
+            var mainBlock = document.querySelector('.main_block');
+            mainBlock.classList.add('slide-out');
+            mainBlock.addEventListener('animationend', function() {
+              window.location.href = '/';
+            }, { once: true });
+          });
+
+          add_packages_button.addEventListener('click', function() {
+            var mainBlock = document.querySelector('.main_block');
+            mainBlock.classList.add('slide-out');
+            mainBlock.addEventListener('animationend', function() {
+              window.location.href = 'addFromList';
+            }, { once: true });
+          });
+        </script>
+
         <footer>
             <!-- place footer here -->
         </footer>
