@@ -75,36 +75,34 @@ def file_worker(app):
             package_name = config["INFO"].get("name")
             package_version = config["INFO"].get("version")
             if package_name and package_version != None:
-                # add package to list
-                config_file = f"{os.path.dirname(os.path.abspath(__file__))}/packages/packages.ini"
-                packages_config = configparser.ConfigParser()
-                packages_config.read(config_file)
-                packages_config[package_name] = {
-                    "name" : package_name,
-                    "version" : package_version
-                }
-                with open(config_file, 'w') as configfile:
-                    packages_config.write(configfile)
-                
-                # extrcting tar file to packages
-                new_dir_path = f"{os.path.dirname(os.path.abspath(__file__))}/packages"
-                old_dirs = [name for name in os.listdir(new_dir_path)]
-                file = tarfile.open(tar_file_path)
-                file.extractall(new_dir_path)
-                file.close()
-                new_dirs = [name for name in os.listdir(new_dir_path)]
-                foldder_name = set(new_dirs) - set(old_dirs)
-                new_folder_name = list(foldder_name)[0]
-                os.rename(f"{new_dir_path}/{new_folder_name}", f"{new_dir_path}/{package_name}")
-                os.remove(tar_file_path)
-                shutil.rmtree(f"{dir_path}/{uploaded_file.filename.replace(".tar.gz", "")}")
-            else:
-                os.remove(tar_file_path)
-                shutil.rmtree(f"{dir_path}/{uploaded_file.filename.replace(".tar.gz", "")}")
-        else:
-            os.remove(tar_file_path)
-            shutil.rmtree(f"{dir_path}/{uploaded_file.filename.replace(".tar.gz", "")}")
-        
+                pattern = r"[!@#$%^&*(),.?\":{}|<>]"
+                if not re.search(pattern, package_name) and not re.search(pattern, package_version):
+                    # add package to list
+                    config_file = f"{os.path.dirname(os.path.abspath(__file__))}/packages/packages.ini"
+                    packages_config = configparser.ConfigParser()
+                    packages_config.read(config_file)
+                    if package_name not in packages_config.sections():
+                        packages_config[package_name] = {
+                            "name" : package_name,
+                            "version" : package_version
+                        }
+                        with open(config_file, 'w') as configfile:
+                            packages_config.write(configfile)
+                        
+                        # extrcting tar file to packages
+                        new_dir_path = f"{os.path.dirname(os.path.abspath(__file__))}/packages"
+                        old_dirs = [name for name in os.listdir(new_dir_path)]
+                        file = tarfile.open(tar_file_path)
+                        file.extractall(new_dir_path)
+                        file.close()
+                        new_dirs = [name for name in os.listdir(new_dir_path)]
+                        foldder_name = set(new_dirs) - set(old_dirs)
+                        new_folder_name = list(foldder_name)[0]
+                        os.rename(f"{new_dir_path}/{new_folder_name}", f"{new_dir_path}/{package_name}")
+
+        os.remove(tar_file_path)
+        shutil.rmtree(f"{dir_path}/{uploaded_file.filename.replace(".tar.gz", "")}")
+
         return 'File uploaded successfully'
     
     @app.route('/delete', methods=['POST'])
@@ -144,7 +142,7 @@ def file_worker(app):
         # get url
         data = request.get_json()
         url = data.get('url')
-        dir = f'{os.path.dirname(os.path.abspath(__file__))}/temp/git'
+        dir_path = f"{os.path.dirname(os.path.abspath(__file__))}/temp/git"
         
 
         # Проверяем, что URL является ссылкой на GitHub
@@ -154,10 +152,9 @@ def file_worker(app):
 
 
         # Клонируем репозиторий по указанному URL
-        git.Repo.clone_from(url, dir)
+        git.Repo.clone_from(url, dir_path)
         
         # Check package
-        dir_path = f"{os.path.dirname(os.path.abspath(__file__))}/temp/git"
         package_dir_path = f"{dir_path}/{[folder for folder in os.listdir(dir_path) if os.path.isdir(f"{dir_path}/{folder}")][1]}"
         if os.path.exists(f"{package_dir_path}/package.ini"):
             config = configparser.ConfigParser()
@@ -165,20 +162,26 @@ def file_worker(app):
             package_name = config["INFO"].get("name")
             package_version = config["INFO"].get("version")
             if package_name and package_version != None:
-                # add package to list
-                config_file = f"{os.path.dirname(os.path.abspath(__file__))}/packages/packages.ini"
-                packages_config = configparser.ConfigParser()
-                packages_config.read(config_file)
-                packages_config[package_name] = {
-                    "name" : package_name,
-                    "version" : package_version
-                }
-                with open(config_file, 'w') as configfile:
-                    packages_config.write(configfile)
-                
-                # move dir to packages
-                shutil.move(package_dir_path, f"{os.path.dirname(os.path.abspath(__file__))}/packages")
-                
+                pattern = r"[!@#$%^&*(),.?\":{}|<>]"
+                if not re.search(pattern, package_name) and not re.search(pattern, package_version):
+                    # add package to list
+                    config_file = f"{os.path.dirname(os.path.abspath(__file__))}/packages/packages.ini"
+                    packages_config = configparser.ConfigParser()
+                    packages_config.read(config_file)
+                    if package_name not in packages_config.sections():
+                        packages_config[package_name] = {
+                            "name" : package_name,
+                            "version" : package_version
+                        }
+                        with open(config_file, 'w') as configfile:
+                            packages_config.write(configfile)
+                        
+                        # move dir to packages
+                        shutil.move(package_dir_path, f"{os.path.dirname(os.path.abspath(__file__))}/packages")
+                    else:
+                        error = True
+                else:
+                    error = True                
             else:
                 error = True
         else:
