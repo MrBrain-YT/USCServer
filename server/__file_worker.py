@@ -154,19 +154,17 @@ def file_worker(app):
 
 
         # Клонируем репозиторий по указанному URL
-        git.Repo.clone_from(url, f'{os.path.dirname(os.path.abspath(__file__))}/temp/git')
+        git.Repo.clone_from(url, dir)
         
         # Check package
         dir_path = f"{os.path.dirname(os.path.abspath(__file__))}/temp/git"
         package_dir_path = f"{dir_path}/{[folder for folder in os.listdir(dir_path) if os.path.isdir(f"{dir_path}/{folder}")][1]}"
         if os.path.exists(f"{package_dir_path}/package.ini"):
-            
             config = configparser.ConfigParser()
             config.read(f"{package_dir_path}/package.ini")
             package_name = config["INFO"].get("name")
             package_version = config["INFO"].get("version")
             if package_name and package_version != None:
-                print("2_yes")
                 # add package to list
                 config_file = f"{os.path.dirname(os.path.abspath(__file__))}/packages/packages.ini"
                 packages_config = configparser.ConfigParser()
@@ -186,8 +184,6 @@ def file_worker(app):
         else:
             error = True
 
-        
-        
         # delete .git folder
         for i in os.listdir(dir):
             if i.endswith('git'):
