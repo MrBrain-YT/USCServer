@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>USCServer</title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+        />
+        <!-- Bootstrap CSS v5.2.1 -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+            crossorigin="anonymous"
+        />
+    </head>
+
+    <body>
+        <header>
+            <!-- place navbar here -->
+        </header>
+        <main class="main_block d-flex justify-content-center" style="margin-top: 200px">
+            <div class="card" style="width: 1050px; height: 560px; margin-left: 20px">
+                <div class="card-header">
+                  Welcome
+                </div>
+                <div class="card-body">
+                  <h3 class="d-flex justify-content-center" style="user-select: none;">Welcome to United Systems Core Server</h3>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="image" style="margin-top: 50px;">
+                        <p class="card-text" style=" user-select: none;">This server is designed to share various packages compatible with United Systems Core.</p>
+                            <button
+                                id="add_packages_button" 
+                                class="btn btn-primary"
+                                style="margin-top: 59%; margin-left: 75%; user-select: none;"
+                                >add package</button>
+                            <button
+                                id="packages_list_button" 
+                                class="btn btn-primary"
+                                style="margin-top: -13.5%; margin-left: 50%; user-select: none;"
+                                >packages list</button>
+                        
+                      </div>
+                      <button type="button" class="btn btn-dark" id="git_Button" style="margin-top: -23.3%; margin-left: 33%; user-select: none;">GitHub</button>
+                    </div>
+                    
+                    <div class="col-md-6">
+                      <div class="welcome_form">
+                        
+                        <img
+                          src="templates/img/USCServer.png"
+                          class="img-fluid rounded-top"
+                          alt=""
+                          style="height: 400px; width: 400px; margin-left:60px; margin-top: 40px; user-select: none;"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                </div>
+            </div>
+        </main>
+        <footer>
+            <!-- place footer here -->
+        </footer>
+        <!-- Bootstrap JavaScript Libraries -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+            crossorigin="anonymous"
+        ></script>
+
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+            integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+            crossorigin="anonymous"
+        ></script>
+
+        <!-- style for main_block -->
+
+        <style>
+          .main_block{
+            animation: animate 0.3s linear forwards;
+          }
+
+          @keyframes animate{
+            0%{
+              transform:  scale(0);
+              
+            }
+
+            25% {
+              transform:  scale(0.25);
+            }
+
+            50% {
+              transform:  scale(0.5);
+            }
+
+            100%{
+              
+              transform:  scale(1);
+              
+            }
+          }
+
+          /* Добавляем класс для анимации съезда блока */
+          .slide-out {
+            animation: slideOut 0.3s forwards;
+          }
+
+          @keyframes slideOut {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-100%);
+            }
+          }
+
+        </style>
+
+        <script>
+          var gitButton = document.getElementById('git_Button');
+          var packages_list_button = document.getElementById('packages_list_button');
+          var add_packages_button = document.getElementById('add_packages_button');
+
+          gitButton.addEventListener('click', function() {
+            var mainBlock = document.querySelector('.main_block');
+            mainBlock.classList.add('slide-out');
+            mainBlock.addEventListener('animationend', function() {
+              window.location.href = 'https://github.com/MrBrain-YT/USCServer';
+            }, { once: true });
+          });
+
+          packages_list_button.addEventListener('click', function() {
+            var mainBlock = document.querySelector('.main_block');
+            mainBlock.classList.add('slide-out');
+            mainBlock.addEventListener('animationend', function() {
+              window.location.href = 'list';
+            }, { once: true });
+          });
+
+          add_packages_button.addEventListener('click', function() {
+            var mainBlock = document.querySelector('.main_block');
+            mainBlock.classList.add('slide-out');
+            mainBlock.addEventListener('animationend', function() {
+              window.location.href = 'add';
+            }, { once: true });
+          });
+        </script>
+
+    </body>
+</html>

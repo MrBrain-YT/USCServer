@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>USCServer</title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+        />
+        <!-- Bootstrap CSS v5.2.1 -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+            crossorigin="anonymous"
+        />
+    </head>
+
+    <body>
+        <header>
+            <!-- place navbar here -->
+        </header>
+        <main class="main_block d-flex justify-content-center" style="margin-top: 200px">
+            <div class="card" style="width: 1050px; height: 560px; margin-left: 20px">
+                <div class="card-header">
+                  Add package
+                </div>
+                <div class="card-body">
+                  <h3 class="d-flex justify-content-center" style="user-select: none;">Add package</h3>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="image" style="margin-top: 50px; height:37%">
+                        <!-- Nav tabs -->
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                          <li class="nav-item" role="presentation">
+                            <button
+                              class="nav-link active"
+                              id="home-tab"
+                              data-bs-toggle="tab"
+                              data-bs-target="#home"
+                              type="button"
+                              role="tab"
+                              aria-controls="home"
+                              aria-selected="true"
+                            >From file</button>
+                          </li>
+                          <li class="nav-item" role="presentation">
+                            <button
+                              class="nav-link"
+                              id="profile-tab"
+                              data-bs-toggle="tab"
+                              data-bs-target="#profile"
+                              type="button"
+                              role="tab"
+                              aria-controls="profile"
+                              aria-selected="false"
+                            >From GitHub</button>
+                          </li>
+                        </ul>
+                        
+                        <!-- Tab panes -->
+                        <div class="tab-content">
+                          <div
+                            class="tab-pane active"
+                            id="home"
+                            role="tabpanel"
+                            aria-labelledby="home-tab"
+                          >
+                            <br>
+                            <p class="card-text" style=" user-select: none;">To add a package, transfer the tar.gz archive to a special form.</p>
+
+                            <div class="mb-3" style="margin-top: 12%">
+                                <label for="fileInput" class="form-label">Choose file</label>
+                                <input
+                                  type="file"
+                                  class="form-control"
+                                  id="fileInput"
+                                  placeholder=""
+                                  accept=".tar.gz"
+                                  aria-describedby="fileHelpId"
+                                />
+                              </div>
+                            </div>
+                          <div
+                            class="tab-pane"
+                            id="profile"
+                            role="tabpanel"
+                            aria-labelledby="profile-tab"
+                          >
+                            <br>
+                            <p class="card-text" style=" user-select: none;">To add a package, enter the GitHub repository URL.</p>
+                            <div class="mb-3" style="margin-top: 12%">
+                              <label for="" style="user-select:none;" class="form-label">GitHub url</label>
+                              <input
+                                type="url"
+                                class="form-control"
+                                name=""
+                                style="user-select:none;"
+                                id="url_input"
+                                aria-describedby="helpId"
+                                placeholder="https://github.com/MrBrain-YT/test-usc-package.git"
+                              />
+                            </div>
+                            
+                          </div>
+                        </div>
+                      
+                      </div>
+                      <button type="button" class="btn btn-danger" style="margin-top: 31%; user-select: none;" id="back_button">Back</button>
+                          <button
+                            onclick="uploadFile()"
+                            class="btn btn-primary"
+                            style="margin-top: -13%; margin-left: 75%; user-select: none;"
+                          >
+                            send package
+                          </button>
+                          
+                          <script>
+                            function uploadFile() 
+                            {
+                              var url = document.getElementById('url_input');
+                              var fileInput = document.getElementById('fileInput');
+                              var file = fileInput.files[0];
+                              var myTab = new bootstrap.Tab(document.getElementById('myTab'));
+                              var activeTab = document.querySelector('.nav-tabs .nav-link.active');
+                              console.log(activeTab.textContent); // Выводит текст активного таба
+                              if (activeTab.textContent == "From file")
+                              {
+                                if (file) 
+                                {
+                                  var formData = new FormData();
+                                  formData.append('file', file);
+
+                                  // Отправляем файл на сервер с помощью AJAX запроса
+                                  var xhr = new XMLHttpRequest();
+                                  xhr.open('POST', '/upload', true);
+                                  xhr.onload = function () 
+                                  {
+                                    if (xhr.status === 200) 
+                                    {
+                                      console.log('Файл успешно загружен на сервер');
+                                      window.location.href = '/';
+                                    } 
+                                    else 
+                                    {
+                                      console.error('Произошла ошибка при загрузке файла на сервер');
+                                    }
+                                  };
+                                xhr.send(formData);
+                                } 
+                                else 
+                                {
+                                  // Если файл не выбран, открываем модальное окно с сообщением об ошибке
+                                  var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+                                  errorModal.show();
+                                }
+                              }
+                              else
+                              {
+                                if(url.value != "")
+                                {
+                                  var data = { "url": url.value }; // Создаем объект данных для отправки на сервер
+
+                                  var xhr = new XMLHttpRequest();
+                                  xhr.open('POST', '/from_repo', true);
+                                  xhr.setRequestHeader('Content-Type', 'application/json'); // Устанавливаем заголовок Content-Type для указания формата данных
+                                  xhr.onreadystatechange = function() {
+                                    if (xhr.readyState === 4) { // Проверяем состояние запроса
+                                      if (xhr.status === 200) {
+                                        console.log('Репозиторий успешно загружен');
+                                        var back_button = document.getElementById('back_button');
+                                        var mainBlock = document.querySelector('.main_block');
+                                        mainBlock.classList.add('slide-out');
+                                        mainBlock.addEventListener('animationend', function() {
+                                          window.location.href = '/';
+                                        }, { once: true });
+
+                                      } else {
+                                        console.error('Произошла ошибка при загрузке репозитория');
+                                      }
+                                    }
+                                  };
+                                  xhr.send(JSON.stringify(data)); // Отправляем данные на сервер в виде строки JSON
+                                }
+                                else
+                                {
+                                  var errorModal = new bootstrap.Modal(document.getElementById('errorModal_url'));
+                                  errorModal.show();
+                                }
+                              }
+                            }
+                          </script>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="welcome_form">
+                        
+                        <img
+                          src="templates/img/mail.png"
+                          class="img-fluid rounded-top"
+                          alt=""
+                          style="height: 400px; width: 400px; margin-left:60px; margin-top: 40px; user-select: none;"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                </div>
+            </div>
+        </main>
+
+          <!-- modal no file -->
+          <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="errorModalLabel">Error</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  Please choose a file.
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- modal no url -->
+          <div class="modal fade" id="errorModal_url" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="errorModalLabel">Error</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  Please write GitHub url.
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        <style>
+          body{
+            overflow-x:hidden;
+          }
+          .main_block{
+            animation: animate 0.3s linear forwards;
+          }
+
+          @keyframes animate{
+            0% {
+              transform: translateX(100%);
+            }
+            100% {
+              transform: translateX(0%);
+            }
+          }
+
+          /* Добавляем класс для анимации съезда блока */
+          .slide-out {
+            animation: slideOut 0.3s forwards;
+          }
+
+          @keyframes slideOut {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-100%);
+            }
+          }
+
+        </style>
+
+        <script>
+          var back_button = document.getElementById('back_button');
+
+          back_button.addEventListener('click', function() {
+            var mainBlock = document.querySelector('.main_block');
+            mainBlock.classList.add('slide-out');
+            mainBlock.addEventListener('animationend', function() {
+              window.location.href = '/';
+            }, { once: true });
+          });
+        </script>
+
+        <footer>
+            <!-- place footer here -->
+        </footer>
+        <!-- Bootstrap JavaScript Libraries -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+            crossorigin="anonymous"
+        ></script>
+
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+            integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+            crossorigin="anonymous"
+        ></script>
+    </body>
+</html>
