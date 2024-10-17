@@ -19,7 +19,6 @@ class ListWorker():
     def add_package_to_list(self, package_config:configparser.ConfigParser) -> None:
         dir_path = f"{os.path.dirname(os.path.abspath(__file__))}/packages"
         package_name = package_config["INFO"].get("name")
-        package_version = package_config["INFO"].get("version")
         
         # Add package to package list
         config = configparser.ConfigParser()
@@ -27,7 +26,6 @@ class ListWorker():
         if package_name not in config.sections():
             config[package_name.lower()] = {
                 "name" : package_name,
-                "version" :package_version
             }
             with open(f"{dir_path}/packages.ini", 'w') as configfile:
                 config.write(configfile)

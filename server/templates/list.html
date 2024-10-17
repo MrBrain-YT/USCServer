@@ -61,7 +61,21 @@
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                   <div>
                                     <span class="me-3" style="user-select: none;">{{ item.name }}</span>
-                                    <span class="text-muted small" style="user-select: none;">{{ item.version }}</span>
+                                    <span class="text-muted small" style="user-select: none;">
+                                      <select class="form-select" id='{{item.name}}_versions' aria-label="Default select example">
+                                        {% for version in item.versions %}
+                                          <option value="{{ version }}">{{ version }}</option>
+                                        {% endfor %}
+                                      </select>
+                                      <style>
+                                        .form-select{
+                                          position: absolute;
+                                          top: 5px;
+                                          width: 100px;
+                                          right: 79px;
+                                        }
+                                      </style>
+                                    </span>
                                   </div>
                                   <button class="btn btn-danger btn-sm" onclick="removeItem(this)">Delete</button>
                                 </li>
@@ -86,12 +100,13 @@
                             button.insertBefore(loader, button.firstChild);
                         
                             // Отправляем запрос на сервер
+                            let itemVersion = document.getElementById(itemName + "_versions").value
                             fetch('/delete', {
                               method: 'POST',
                               headers: {
                                 'Content-Type': 'application/json'
                               },
-                              body: JSON.stringify({ itemName: itemName })
+                              body: JSON.stringify({ itemName: itemName, version: itemVersion})
                             })
                             .then(response => {
                               if (!response.ok) {
@@ -107,8 +122,23 @@
                               button.disabled = false;
                         
                               // Удаляем элемент из списка после успешного удаления
-                              listItem.remove();
-                              button.closest('li').remove();
+                              let itemVersion = document.getElementById(itemName + "_versions").value
+                              let parentElement = document.getElementById(itemName + "_versions")
+                              const children = parentElement.children;
+                              for (let i = 0; i < children.length; i++) {
+                                  const child = children[i];
+
+                                  // Проверить значение атрибута value
+                                  if (child.getAttribute('value') == itemVersion) {
+                                      // Удалить элемент
+                                      parentElement.removeChild(child);
+                                      break; // Выход из цикла, так как элемент удален
+                                  }
+                              }
+                              if (children.length == 0){
+                                listItem.remove();
+                                button.closest('li').remove();
+                              }
                             })
                             .catch(error => {
                               console.error('Error:', error);
