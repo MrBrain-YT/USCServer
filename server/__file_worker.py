@@ -22,15 +22,25 @@ def file_worker(app):
     def send_package():
         info = request.form
         package_name = info.get("package_name")
+        package_version = info.get("version")
+        if package_version == "none":
+            # get last package version
+            package_version_list = os.listdir(f"{os.path.dirname(os.path.abspath(__file__))}/packages/{package_name}/")
+            package_version_list.sort()
+            package_version = package_version_list[-1]
         files_path = os.path.dirname(os.path.abspath(__file__))
         if ListWorker.check_exits(name=package_name):
-            with tarfile.open(f"{files_path}/archives/{package_name}.tar.gz", "w:gz") as tar:
-                source_dir = f"{files_path}/packages/{package_name}"
-                tar.add(source_dir, arcname=os.path.basename(source_dir))
-            
-            return send_file(f"{files_path}/archives/{package_name}.tar.gz", as_attachment=True)
+            if package_version in os.listdir(f"{os.path.dirname(os.path.abspath(__file__))}/packages/{package_name}/"):
+                with tarfile.open(f"{files_path}/archives/{package_name}.tar.gz", "w:gz") as tar:
+                    source_dir = f"{files_path}/packages/{package_name}/{package_version}/{package_name}"
+                    print(source_dir)
+                    tar.add(source_dir, arcname=os.path.basename(source_dir))
+                
+                return send_file(f"{files_path}/archives/{package_name}.tar.gz", as_attachment=True)
+            else:
+                return "error", 405
         else:
-            return "error", 500
+            return "error", 404
     
     @app.route('/', methods = ['GET'])
     def home():
@@ -51,9 +61,12 @@ def file_worker(app):
         packages_config = configparser.ConfigParser()
         packages_config.read(config_file)
         for package in packages_config.sections():
+            versions = os.listdir(f"{os.path.dirname(os.path.abspath(__file__))}/packages/{package}")
+            versions.sort()
+            versions.reverse()
             package_item = {
                 'name': packages_config[package].get("name"),
-                'version': packages_config[package].get("version")
+                'versions': versions
             }
             items.append(package_item)
 
@@ -85,18 +98,18 @@ def file_worker(app):
                     shutil.rmtree(f"{dir_path}/{uploaded_file.filename.replace(".tar.gz", "")}")
                 else:
                     # add package to list
-                    if not ListWorker.check_exits(package_name):
-                        ListWorker.add_package_to_list(package_config=package_config)
+                    new_dir_path = f"{os.path.dirname(os.path.abspath(__file__))}/packages/{package_name}/{package_version}"
+                    if not ListWorker.check_exits(package_name) or (ListWorker.check_exits(package_name) and package_version not in [os.listdir(f"{os.path.dirname(os.path.abspath(__file__))}/packages/{package_name}")]):
+                        # create version directory
+                        if not os.path.exists(new_dir_path):
+                            os.makedirs(new_dir_path)
                         # extrcting tar file to packages
-                        new_dir_path = f"{os.path.dirname(os.path.abspath(__file__))}/packages"
-                        old_dirs = [name for name in os.listdir(new_dir_path)]
                         file = tarfile.open(tar_file_path)
                         file.extractall(new_dir_path)
                         file.close()
-                        new_dirs = [name for name in os.listdir(new_dir_path)]
-                        foldder_name = set(new_dirs) - set(old_dirs)
-                        new_folder_name = list(foldder_name)[0]
-                        os.rename(f"{new_dir_path}/{new_folder_name}", f"{new_dir_path}/{package_name}")
+                        ListWorker.add_package_to_list(package_config=package_config)
+                        os.remove(tar_file_path)
+                        shutil.rmtree(f"{dir_path}/{uploaded_file.filename.replace(".tar.gz", "")}")
                     else:
                         os.remove(tar_file_path)
                         shutil.rmtree(f"{dir_path}/{uploaded_file.filename.replace(".tar.gz", "")}")
@@ -110,7 +123,6 @@ def file_worker(app):
             shutil.rmtree(f"{dir_path}/{uploaded_file.filename.replace(".tar.gz", "")}")
             pass
 
-
         return 'File uploaded successfully'
     
     @app.route('/delete', methods=['POST'])
@@ -120,8 +132,11 @@ def file_worker(app):
         package_name = data.get('itemName').lower()
         if ListWorker.check_exits(package_name):
             # remove package from list
-            shutil.rmtree(f"{dir_path}/{package_name}")
-            ListWorker.remove_package_from_list(package_name)
+            if os.path.exists(f"{dir_path}/{package_name}/{data.get('version')}"):
+                shutil.rmtree(f"{dir_path}/{package_name}/{data.get('version')}")
+            if (len(os.listdir(f"{dir_path}/{package_name}/")) == 0):
+                shutil.rmtree(f"{dir_path}/{package_name}/")
+                ListWorker.remove_package_from_list(package_name)
         else:
             pass
         return jsonify({'message': f'Deleted item: {package_name}'}), 200
@@ -168,22 +183,22 @@ def file_worker(app):
                     if re.search(pattern, package_name) or re.search(pattern, package_version):
                         error = True
                     else:
-                        # add package to list
-                        config_file = f"{os.path.dirname(os.path.abspath(__file__))}/packages/packages.ini"
-                        packages_config = configparser.ConfigParser()
-                        packages_config.read(config_file)
-                        if not ListWorker.check_exits(package_name):
+                        new_dir_path = f"{os.path.dirname(os.path.abspath(__file__))}/packages/{package_name}/{package_version}"
+                        if not ListWorker.check_exits(package_name) or (ListWorker.check_exits(package_name) and package_version not in [os.listdir(f"{os.path.dirname(os.path.abspath(__file__))}/packages/{package_name}")]):
+                            # add package to list
+                            config_file = f"{os.path.dirname(os.path.abspath(__file__))}/packages/packages.ini"
+                            packages_config = configparser.ConfigParser()
+                            packages_config.read(config_file)
                             packages_config[package_name] = {
                                 "name" : package_name,
-                                "version" : package_version
                             }
                             with open(config_file, 'w') as configfile:
                                 packages_config.write(configfile)
                             
                             # move dir to packages
-                            shutil.move(package_dir_path, f"{os.path.dirname(os.path.abspath(__file__))}/packages")
+                            shutil.move(package_dir_path, new_dir_path)  
                         else:
-                            error = True            
+                            error = True          
                 else:
                     error = True
             else:
@@ -199,7 +214,7 @@ def file_worker(app):
                 while True:
                     call(['attrib', '-H', tmp])
                     break
-                shutil.rmtree(tmp, onerror=on_rm_error)
+                shutil.rmtree(tmp, onexc=on_rm_error)
         # delete git folder
         shutil.rmtree(dir_path)
         if not error:
